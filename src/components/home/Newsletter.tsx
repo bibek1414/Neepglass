@@ -25,7 +25,7 @@ export const Newsletter: React.FC = () => {
                 },
                 onError: (error: any) => {
                     toast.error(
-                        error?.response?.data?.message || "Failed to subscribe"
+                        error?.message || "Failed to subscribe"
                     );
                 },
             }

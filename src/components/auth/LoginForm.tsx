@@ -45,7 +45,7 @@ export const LoginForm = () => {
                 <div className="text-center">
                     <Link href="/" className="inline-flex items-center gap-2 mb-6">
                         <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
-                            <span className="text-primary-foreground font-bold text-2xl italic">L</span>
+                            <span className="text-primary-foreground font-bold text-2xl italic">S</span>
                         </div>
                     </Link>
                     <h2 className="text-3xl font-extrabold text-foreground">Welcome Back</h2>

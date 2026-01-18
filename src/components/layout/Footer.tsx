@@ -10,7 +10,7 @@ export const Footer: React.FC = () => (
             <div className="space-y-6">
                 <Link href="/" className="flex items-center gap-2">
                     <div className="w-10 h-10 bg-primary-foreground/10 rounded-xl flex items-center justify-center">
-                        <span className="text-primary-foreground font-bold text-xl italic">L</span>
+                        <span className="text-primary-foreground font-bold text-xl italic">S</span>
                     </div>
                     <span className="text-2xl font-bold tracking-tight text-primary-foreground">SastoBazaar<span className="text-primary-foreground/40">.</span></span>
                 </Link>
