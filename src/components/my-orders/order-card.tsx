@@ -1,7 +1,7 @@
 import OrderHeader from "./order-header";
 import OrderItems from "./order-items";
 import ShippingAddress from "./shipping-address";
-import { Order } from "@/types/customer/my-orders";
+import { Order } from "@/types/my-orders";
 
 interface OrderCardProps {
   order: Order;

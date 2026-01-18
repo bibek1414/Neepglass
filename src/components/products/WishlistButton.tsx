@@ -1,22 +1,24 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 
 interface WishlistButtonProps {
     size?: "sm" | "md" | "lg";
     isActive?: boolean;
+    isLoading?: boolean;
     onToggle?: (active: boolean) => void;
 }
 
 export default function WishlistButton({
     size = "md",
     isActive = false,
+    isLoading = false,
     onToggle,
 }: WishlistButtonProps) {
     const handleToggle = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (onToggle) onToggle(!isActive);
+        if (onToggle && !isLoading) onToggle(!isActive);
     };
 
     const sizeClasses = {
@@ -34,15 +36,23 @@ export default function WishlistButton({
     return (
         <button
             onClick={handleToggle}
-            className={`${sizeClasses[size]} rounded-full transition-all duration-300 transform hover:scale-110 ${isActive
+            disabled={isLoading}
+            className={`${sizeClasses[size]} rounded-full transition-all duration-300 transform hover:scale-110 disabled:opacity-70 disabled:scale-100 ${isActive
                 ? "bg-destructive/10 text-destructive"
                 : "bg-card/80 backdrop-blur-sm text-muted-foreground hover:text-destructive shadow-sm"
                 }`}
         >
-            <Heart
-                size={iconSizes[size]}
-                className={isActive ? "fill-current" : ""}
-            />
+            {isLoading ? (
+                <Loader2
+                    size={iconSizes[size]}
+                    className="animate-spin"
+                />
+            ) : (
+                <Heart
+                    size={iconSizes[size]}
+                    className={isActive ? "fill-current" : ""}
+                />
+            )}
         </button>
     );
 }

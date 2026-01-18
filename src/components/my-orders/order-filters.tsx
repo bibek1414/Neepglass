@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   OrderFilters as OrderFiltersType,
   StatusCounts,
-} from "@/types/customer/my-orders";
+} from "@/types/my-orders";
 
 interface StatusOption {
   key: keyof StatusCounts;

@@ -1,5 +1,5 @@
 import { MapPin, User, Phone } from "lucide-react";
-import { Order } from "@/types/customer/my-orders";
+import { Order } from "@/types/my-orders";
 
 interface ShippingAddressProps {
   order: Order;

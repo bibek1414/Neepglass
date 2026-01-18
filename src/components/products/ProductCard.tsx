@@ -43,6 +43,8 @@ export default function ProductCard({
     const addToWishlistMutation = useAddToWishlist();
     const removeFromWishlistMutation = useRemoveFromWishlist();
 
+    const isPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
+
     const isWishlisted = (product as any).is_wishlist || wishlistItems?.some(item => item.product.id === product.id);
 
     const handleWishlistToggle = (active: boolean) => {
@@ -97,6 +99,7 @@ export default function ProductCard({
                 <WishlistButton
                     size="sm"
                     isActive={isWishlisted}
+                    isLoading={isPending}
                     onToggle={handleWishlistToggle}
                 />
             </div>

@@ -1,5 +1,5 @@
 import StatusBadge from "./status-badge";
-import { Order } from "@/types/customer/my-orders";
+import { Order } from "@/types/my-orders";
 
 interface OrderHeaderProps {
   order: Order;

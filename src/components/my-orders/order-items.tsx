@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Package } from "lucide-react";
 import Image from "next/image";
-import { OrderItem } from "@/types/customer/my-orders";
-import { CreateReviewData } from "@/types/customer/review";
-import { useCreateReview, useReviewForm } from "@/hooks/customer/use-reviews";
+import { OrderItem } from "@/types/my-orders";
+import { CreateReviewData } from "@/types/review";
+import { useCreateReview, useReviewForm } from "@/hooks/use-reviews";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

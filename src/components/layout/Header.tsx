@@ -6,12 +6,15 @@ import { useRouter } from 'next/navigation';
 import { ShoppingCart, Heart, User, Search, Menu, X, ChevronDown, LogOut } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '../../hooks/use-auth';
+import { useWishlist } from '@/hooks/use-wishlist';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 
 export const Header: React.FC<{ onCartOpen: () => void }> = ({ onCartOpen }) => {
     const { itemCount } = useCart();
     const { user, logout, isAuthenticated } = useAuth();
+    const { data: wishlistItems } = useWishlist();
+    const wishlistCount = wishlistItems?.length || 0;
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const router = useRouter();
@@ -53,7 +56,11 @@ export const Header: React.FC<{ onCartOpen: () => void }> = ({ onCartOpen }) => 
 
                         <Link href="/wishlist" className="p-2 text-muted-foreground hover:text-primary transition-colors relative">
                             <Heart size={22} />
-                            {/* Wishlist badge logic could go here */}
+                            {wishlistCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-background">
+                                    {wishlistCount}
+                                </span>
+                            )}
                         </Link>
 
                         <button onClick={onCartOpen} className="p-2 text-muted-foreground hover:text-primary transition-colors relative">
@@ -101,7 +108,7 @@ export const Header: React.FC<{ onCartOpen: () => void }> = ({ onCartOpen }) => 
                                             <Link href="/profile" className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary">
                                                 <User size={16} /> Profile
                                             </Link>
-                                            <Link href="/orders" className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary">
+                                            <Link href="/my-orders" className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary">
                                                 <Search size={16} /> My Orders
                                             </Link>
                                             <hr className="my-1 border-border/50" />

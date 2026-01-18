@@ -27,7 +27,6 @@ export const useAddToWishlist = () => {
     mutationFn: (productId: number) => addToWishlist({ productId }),
     onSuccess: (newItem) => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Added to Wishlist", {
         description: `${newItem.product.name} has been added to your wishlist.`,
       });
@@ -48,7 +47,6 @@ export const useRemoveFromWishlist = () => {
       removeFromWishlist({ wishlistItemId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Removed from Wishlist", {
         description: "The item has been removed from your wishlist.",
       });
