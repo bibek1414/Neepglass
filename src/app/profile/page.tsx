@@ -1,7 +1,12 @@
-import React from "react";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { Metadata } from "next";
 
-const ProfilePage = () => {
+export const metadata: Metadata = {
+    title: "My Profile - SastoBazaar",
+    description: "Manage your SastoBazaar profile and preferences.",
+};
+
+export default function ProfilePage() {
     return (
         <div className="min-h-screen bg-secondary/10">
             <main className="container mx-auto px-4 py-12 md:py-16">
@@ -45,6 +50,4 @@ const ProfilePage = () => {
             </main>
         </div>
     );
-};
-
-export default ProfilePage;
+}

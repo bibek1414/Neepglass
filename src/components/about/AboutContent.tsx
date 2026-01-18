@@ -3,7 +3,6 @@
 import React from 'react';
 import { Shield, Sparkles, Heart, Zap } from 'lucide-react';
 import ImageWithFallback from '@/components/common/ImageWithFallback';
-import TeamSection from './TeamSection';
 
 const AboutContent = () => {
     return (
@@ -64,18 +63,6 @@ const AboutContent = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <TeamSection />
-
-            <section className="bg-primary text-primary-foreground py-24 px-4 mt-12 text-center">
-                <div className="max-w-4xl mx-auto space-y-8">
-                    <span className="text-primary-foreground/60 font-bold tracking-widest uppercase text-xs mb-2 block">Looking Forward</span>
-                    <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-4">Our Vision</h2>
-                    <h3 className="text-2xl md:text-4xl font-bold leading-tight">&quot;To become the world&apos;s most curated marketplace for premium lifestyle goods, empowering artisans and delighting customers.&quot;</h3>
-                    <div className="w-20 h-1 bg-primary-foreground/30 mx-auto"></div>
-                    <p className="text-primary-foreground/70">By 2030, we aim to eliminate plastic waste from our entire shipping supply chain and support over 1,000 independent designers globally.</p>
                 </div>
             </section>
         </div>

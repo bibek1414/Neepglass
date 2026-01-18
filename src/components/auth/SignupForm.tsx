@@ -1,17 +1,19 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signupSchema, SignupFormValues } from '@/schemas/customer/signup.form';
-import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React from "react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { signupSchema, SignupFormValues } from "@/schemas/customer/signup.form";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const SignupForm = () => {
     const { signup, isLoading } = useAuth();
+
     const {
         register,
         handleSubmit,
@@ -19,19 +21,18 @@ export const SignupForm = () => {
         formState: { errors },
     } = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
-        mode: 'onChange',
+        mode: "onChange",
     });
 
     const onSubmit = async (data: SignupFormValues) => {
         try {
             await signup(data);
         } catch (error: any) {
-            console.error('Signup error:', error);
             if (error.status === 400 && error.data?.error?.params?.field_errors) {
                 const fieldErrors = error.data.error.params.field_errors;
                 Object.keys(fieldErrors).forEach((field) => {
                     setError(field as keyof SignupFormValues, {
-                        type: 'server',
+                        type: "server",
                         message: fieldErrors[field][0],
                     });
                 });
@@ -40,110 +41,148 @@ export const SignupForm = () => {
     };
 
     return (
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="first_name">First Name</Label>
-                        <Input
-                            id="first_name"
-                            type="text"
-                            placeholder="John"
-                            {...register('first_name')}
-                            className={errors.first_name ? 'border-destructive focus-visible:ring-destructive/20' : ''}
-                        />
-                        {errors.first_name && (
-                            <p className="text-xs text-destructive mt-1">{errors.first_name.message}</p>
-                        )}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="last_name">Last Name</Label>
-                        <Input
-                            id="last_name"
-                            type="text"
-                            placeholder="Doe"
-                            {...register('last_name')}
-                            className={errors.last_name ? 'border-destructive focus-visible:ring-destructive/20' : ''}
-                        />
-                        {errors.last_name && (
-                            <p className="text-xs text-destructive mt-1">{errors.last_name.message}</p>
-                        )}
-                    </div>
-                </div>
+        <div className="min-h-screen flex items-center justify-center bg-secondary/30 px-4 py-12">
+            <div className="max-w-md w-full space-y-8 bg-card p-10 rounded-3xl shadow-xl shadow-primary/5 border border-border/50">
 
-                <div className="space-y-2">
-                    <Label htmlFor="email">Email address</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        placeholder="name@example.com"
-                        {...register('email')}
-                        className={errors.email ? 'border-destructive focus-visible:ring-destructive/20' : ''}
-                    />
-                    {errors.email && (
-                        <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
-                    )}
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        {...register('phone')}
-                        className={errors.phone ? 'border-destructive focus-visible:ring-destructive/20' : ''}
-                    />
-                    {errors.phone && (
-                        <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>
-                    )}
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        placeholder="••••••••"
-                        {...register('password')}
-                        className={errors.password ? 'border-destructive focus-visible:ring-destructive/20' : ''}
-                    />
-                    {errors.password && (
-                        <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
-                    )}
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                    <Input
-                        id="confirmPassword"
-                        type="password"
-                        placeholder="••••••••"
-                        {...register('confirmPassword')}
-                        className={errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive/20' : ''}
-                    />
-                    {errors.confirmPassword && (
-                        <p className="text-xs text-destructive mt-1">{errors.confirmPassword.message}</p>
-                    )}
-                </div>
-            </div>
-
-            <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 rounded-xl font-bold text-lg shadow-lg shadow-primary/10 transition-all active:scale-[0.98] disabled:opacity-50"
-            >
-                {isLoading ? 'Creating account...' : 'Create Account'}
-            </Button>
-
-            <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                    Already have an account?{' '}
-                    <Link href="/login" className="font-bold text-primary hover:text-primary/80">
-                        Sign in instead
+                {/* Header */}
+                <div className="text-center">
+                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
+                        <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
+                            <span className="text-primary-foreground font-bold text-2xl italic">
+                                S
+                            </span>
+                        </div>
                     </Link>
-                </p>
+
+                    <h2 className="text-3xl font-extrabold text-foreground">
+                        Create Account
+                    </h2>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        Join SastoBazaar and start your premium shopping journey
+                    </p>
+                </div>
+
+                {/* Form */}
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="first_name">First Name</Label>
+                                <Input
+                                    id="first_name"
+                                    placeholder="John"
+                                    {...register("first_name")}
+                                    className={errors.first_name ? "border-destructive" : ""}
+                                />
+                                {errors.first_name && (
+                                    <p className="text-xs text-destructive">
+                                        {errors.first_name.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="last_name">Last Name</Label>
+                                <Input
+                                    id="last_name"
+                                    placeholder="Doe"
+                                    {...register("last_name")}
+                                    className={errors.last_name ? "border-destructive" : ""}
+                                />
+                                {errors.last_name && (
+                                    <p className="text-xs text-destructive">
+                                        {errors.last_name.message}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email address</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="name@example.com"
+                                {...register("email")}
+                                className={errors.email ? "border-destructive" : ""}
+                            />
+                            {errors.email && (
+                                <p className="text-xs text-destructive">
+                                    {errors.email.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="phone">Phone Number</Label>
+                            <Input
+                                id="phone"
+                                type="tel"
+                                placeholder="+977 98XXXXXXXX"
+                                {...register("phone")}
+                                className={errors.phone ? "border-destructive" : ""}
+                            />
+                            {errors.phone && (
+                                <p className="text-xs text-destructive">
+                                    {errors.phone.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                placeholder="••••••••"
+                                {...register("password")}
+                                className={errors.password ? "border-destructive" : ""}
+                            />
+                            {errors.password && (
+                                <p className="text-xs text-destructive">
+                                    {errors.password.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="confirmPassword">
+                                Confirm Password
+                            </Label>
+                            <Input
+                                id="confirmPassword"
+                                type="password"
+                                placeholder="••••••••"
+                                {...register("confirmPassword")}
+                                className={errors.confirmPassword ? "border-destructive" : ""}
+                            />
+                            {errors.confirmPassword && (
+                                <p className="text-xs text-destructive">
+                                    {errors.confirmPassword.message}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full py-6 rounded-xl font-bold text-lg"
+                    >
+                        {isLoading ? "Creating account..." : "Create Account"}
+                    </Button>
+
+                    <p className="text-center text-sm text-muted-foreground">
+                        Already have an account?{" "}
+                        <Link
+                            href="/login"
+                            className="font-bold text-primary hover:text-primary/80"
+                        >
+                            Sign in instead
+                        </Link>
+                    </p>
+                </form>
             </div>
-        </form>
+        </div>
     );
 };

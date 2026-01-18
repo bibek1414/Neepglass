@@ -1,10 +1,11 @@
-"use client";
-
-import React from 'react';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { Metadata } from 'next';
 
-const LoginPage = () => {
-    return <LoginForm />;
+export const metadata: Metadata = {
+    title: "Login - SastoBazaar",
+    description: "Login to your SastoBazaar account.",
 };
 
-export default LoginPage;
+export default function LoginPage() {
+    return <LoginForm />;
+}
