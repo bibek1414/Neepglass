@@ -24,7 +24,7 @@ export const Hero: React.FC = () => {
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
-                <div className="max-w-2xl animate-in slide-in-from-left duration-700">
+                <div className="max-w-2xl">
                     <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-secondary text-primary mb-6 inline-block">
                         New Collection 2024
                     </span>

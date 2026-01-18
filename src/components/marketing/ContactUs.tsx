@@ -56,13 +56,13 @@ export default function ContactUs() {
 
     return (
         <motion.section
-            className="bg-background relative space-y-8 overflow-hidden px-4 py-8 md:space-y-12 md:px-4 md:py-20"
+            className="relative space-y-8 overflow-hidden px-4 py-8 md:space-y-12 md:px-4 md:py-20"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
             variants={fadeInUp}
         >
-            <div className="pointer-events-none absolute top-40 -left-20 z-10 hidden h-60 w-60 rounded-full bg-blue-500 opacity-10 blur-3xl md:block"></div>
+            <div className="pointer-events-none absolute top-40 -left-20 z-10 hidden h-60 w-60 rounded-full bg-primary opacity-10 blur-3xl md:block"></div>
             <div className="bg-primary pointer-events-none absolute -right-20 bottom-40 z-10 hidden h-60 w-60 rounded-full opacity-10 blur-3xl md:block"></div>
 
             <div className="relative z-20 mx-auto max-w-2xl px-4 text-center">
