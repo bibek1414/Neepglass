@@ -47,12 +47,13 @@ const BlogDetailsContent = () => {
         <article className="bg-background min-h-screen pb-24">
             {/* Header */}
             <div className="max-w-4xl mx-auto px-4 pt-16 pb-12">
-                <button
+                <Button
+                    variant="ghost"
                     onClick={() => router.back()}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-primary font-bold text-xs uppercase tracking-widest mb-10 transition-colors"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-primary font-bold text-xs uppercase tracking-widest mb-10 transition-colors p-0 h-auto hover:bg-transparent"
                 >
                     <ArrowLeft size={16} /> Back to Journal
-                </button>
+                </Button>
 
                 <div className="flex gap-2 mb-6">
                     {blog.tags?.map(tag => (
@@ -88,15 +89,15 @@ const BlogDetailsContent = () => {
 
                     <div className="flex items-center gap-3">
                         <span className="text-xs font-black text-muted-foreground uppercase tracking-widest mr-2">Share</span>
-                        <button className="w-10 h-10 rounded-full bg-secondary text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center">
+                        <Button variant="outline" size="icon" className="w-10 h-10 rounded-full bg-secondary text-muted-foreground border-none hover:bg-primary hover:text-primary-foreground transition-all">
                             <Facebook size={18} />
-                        </button>
-                        <button className="w-10 h-10 rounded-full bg-secondary text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center">
+                        </Button>
+                        <Button variant="outline" size="icon" className="w-10 h-10 rounded-full bg-secondary text-muted-foreground border-none hover:bg-primary hover:text-primary-foreground transition-all">
                             <Twitter size={18} />
-                        </button>
-                        <button className="w-10 h-10 rounded-full bg-secondary text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center">
+                        </Button>
+                        <Button variant="outline" size="icon" className="w-10 h-10 rounded-full bg-secondary text-muted-foreground border-none hover:bg-primary hover:text-primary-foreground transition-all">
                             <Linkedin size={18} />
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -127,9 +128,9 @@ const BlogDetailsContent = () => {
                             <Share2 size={18} className="text-primary" /> Spread the word
                         </span>
                         <div className="flex gap-2">
-                            <button className="px-6 py-3 bg-secondary rounded-2xl text-muted-foreground font-bold text-sm hover:bg-primary hover:text-primary-foreground transition-colors">
+                            <Button variant="secondary" className="px-6 py-6 bg-secondary rounded-2xl text-muted-foreground font-bold text-sm hover:bg-primary hover:text-primary-foreground transition-colors h-auto border-none">
                                 Newsletter Sub
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

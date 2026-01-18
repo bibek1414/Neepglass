@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFAQs } from '@/hooks/use-faq';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,9 +37,10 @@ export const FAQSection = () => {
                                 "group rounded-3xl border transition-all duration-300",
                             )}
                         >
-                            <button
+                            <Button
+                                variant="ghost"
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                className="w-full px-8 py-6 flex items-center justify-between text-left"
+                                className="w-full px-8 py-10 flex items-center justify-between text-left h-auto hover:bg-transparent"
                             >
                                 <span className={cn(
                                     "text-lg font-bold transition-colors",

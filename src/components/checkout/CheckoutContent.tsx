@@ -320,9 +320,13 @@ const CheckoutContent = () => {
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-20">
-            <button onClick={() => router.back()} className="mb-8 flex items-center gap-2 text-muted-foreground hover:text-foreground font-medium transition-colors">
+            <Button
+                variant="ghost"
+                onClick={() => router.back()}
+                className="mb-8 flex items-center gap-2 text-muted-foreground hover:text-foreground font-medium transition-colors p-0 h-auto hover:bg-transparent"
+            >
                 <ChevronLeft size={18} /> Back
-            </button>
+            </Button>
 
             <div className="mb-12">
                 <h1 className="text-4xl font-black text-foreground">Checkout</h1>
