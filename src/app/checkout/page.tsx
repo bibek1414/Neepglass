@@ -1,215 +1,590 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ShieldCheck, CreditCard, Truck, ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
-import { useCart } from '@/hooks/use-cart';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown, ChevronLeft } from "lucide-react";
+import { useCart } from "@/hooks/use-cart";
+import { useCreateOrder } from "@/hooks/use-orders";
+import { CreateOrderRequest, OrderItem } from "@/types/orders";
+import { toast } from "sonner";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { checkoutFormSchema, CheckoutFormValues } from "@/schemas/chekout.form";
+import { PromoCodeInput } from "@/components/products/PromoCodeInput";
+import { PromoCode } from "@/types/promo-code-validate";
+import { useDeliveryChargeCalculator } from "@/hooks/use-delivery-charge-calculator";
 
 const CheckoutPage = () => {
-    const { cartItems, totalPrice, clearCart } = useCart();
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const { cartItems, totalPrice, clearCart } = useCart();
+    const createOrderMutation = useCreateOrder();
+    const { user, isAuthenticated } = useAuth();
+    const [appliedPromoCode, setAppliedPromoCode] = useState<PromoCode | null>(
+        null
+    );
+    const [openBillingCity, setOpenBillingCity] = useState(false);
+    const [openShippingCity, setOpenShippingCity] = useState(false);
 
-    const shipping = 15;
-    const tax = Math.round(totalPrice * 0.08);
-    const total = totalPrice + shipping + tax;
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors, isSubmitting },
+    } = useForm<CheckoutFormValues>({
+        resolver: zodResolver(checkoutFormSchema),
+        defaultValues: {
+            customer_name: user?.first_name ? `${user.first_name} ${user.last_name || ""}`.trim() : "",
+            customer_email: user?.email || "",
+            customer_phone: user?.phone || "",
+            customer_address: user?.address || "",
+            city: "",
+            shipping_address: "",
+            shipping_city: "",
+            same_as_customer_address: true,
+            note: "",
+        },
+        mode: "onChange",
+    });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            clearCart();
-            router.push('/'); // Or order-success if exists
-        }, 2000);
+    const sameAsCustomerAddress = watch("same_as_customer_address");
+    const cityDistrict = watch("city");
+    const shippingCityDistrict = watch("shipping_city");
+
+    // Calculate total weight from cart items
+    const totalWeight = cartItems.reduce((total, item) => {
+        const itemWeight = parseFloat(item.product.weight || "0");
+        return total + itemWeight * item.quantity;
+    }, 0);
+
+    // Use delivery charge calculator
+    const {
+        deliveryCharge,
+        citiesDistricts,
+        isLoading: isLoadingDeliveryCharges,
+        searchQuery,
+        setSearchQuery,
+    } = useDeliveryChargeCalculator({
+        selectedCityDistrict: sameAsCustomerAddress
+            ? cityDistrict
+            : shippingCityDistrict || cityDistrict,
+        totalWeight,
+    });
+
+    // Calculate subtotal
+    const subtotalAmount = totalPrice;
+
+    // Calculate discount
+    const discountAmount = appliedPromoCode
+        ? (subtotalAmount * Number(appliedPromoCode.discount_percentage)) / 100
+        : 0;
+
+    // Calculate total after discount and delivery charge
+    const totalAmount = subtotalAmount - discountAmount + deliveryCharge;
+
+    const handlePromoCodeApplied = (promoCode: PromoCode | null) => {
+        setAppliedPromoCode(promoCode);
     };
+
+    const onSubmit = async (data: CheckoutFormValues) => {
+        if (cartItems.length === 0) {
+            toast.error("Your cart is empty");
+            return;
+        }
+
+        try {
+            const orderItems: OrderItem[] = cartItems.map(item => {
+                if (item.selectedVariant?.id) {
+                    return {
+                        variant_id: item.selectedVariant.id,
+                        quantity: item.quantity,
+                        price: item.selectedVariant.price,
+                    };
+                } else {
+                    return {
+                        product_id: item.product.id,
+                        quantity: item.quantity,
+                        price: item.product.price.toString(),
+                    };
+                }
+            });
+
+            const orderData: CreateOrderRequest = {
+                customer_name: data.customer_name,
+                customer_email: data.customer_email,
+                customer_phone: data.customer_phone,
+                customer_address: data.customer_address,
+                city: data.city,
+                shipping_address: data.same_as_customer_address
+                    ? data.customer_address
+                    : data.shipping_address || "",
+                shipping_city: data.same_as_customer_address
+                    ? data.city
+                    : data.shipping_city || "",
+                total_amount: totalAmount.toFixed(2),
+                delivery_charge: deliveryCharge.toFixed(2),
+                items: orderItems,
+                payment_type: "cod",
+                ...(data.note && { note: data.note }),
+                ...(appliedPromoCode && {
+                    promo_code: appliedPromoCode.id,
+                    discount_amount: discountAmount.toFixed(2),
+                }),
+            };
+
+            const order = await createOrderMutation.mutateAsync({
+                orderData,
+                includeToken: isAuthenticated,
+            });
+
+            toast.success("Order placed successfully! Pay on delivery.");
+            clearCart();
+            router.push(`/checkout/success/${order.id}`); // Redirect to success page
+        } catch (error) {
+            console.error("Order creation failed:", error);
+            toast.error("Failed to place order. Please try again.");
+        }
+    };
+
+    const OrderSummaryContent = () => (
+        <div className="space-y-4">
+            <div className="max-h-[300px] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+                {cartItems.map((item, index) => {
+                    const displayPrice = item.selectedVariant?.price || item.product.price;
+                    const cartItemKey = `${item.product.id}-${item.selectedVariant?.id || "no-variant"}-${index}`;
+
+                    return (
+                        <div
+                            key={cartItemKey}
+                            className="flex gap-4 border-b border-gray-100 pb-4 last:border-b-0"
+                        >
+                            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border">
+                                <Image
+                                    src={item.product.thumbnail_image || ""}
+                                    alt={item.product.name}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+
+                            <div className="flex flex-1 flex-col justify-between">
+                                <div>
+                                    <h4 className="text-sm leading-tight font-medium line-clamp-1">
+                                        {item.product.name}
+                                    </h4>
+
+                                    {item.selectedVariant && item.selectedVariant.option_values && (
+                                        <div className="mt-1 flex flex-wrap gap-1">
+                                            {Object.entries(item.selectedVariant.option_values).map(
+                                                ([optionName, optionValue]) => (
+                                                    <Badge
+                                                        key={optionName}
+                                                        variant="secondary"
+                                                        className="px-1 text-[10px] capitalize bg-primary/5 text-primary border-none"
+                                                    >
+                                                        {optionName}: {optionValue}
+                                                    </Badge>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <p className="mt-1 text-[10px] text-muted-foreground font-bold">
+                                        QTY: {item.quantity}
+                                    </p>
+                                </div>
+
+                                <div className="mt-1 flex items-end justify-between">
+                                    <div className="text-xs font-bold text-foreground">
+                                        Rs.{(Number(displayPrice) * item.quantity).toLocaleString("en-IN")}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <Separator />
+
+            <PromoCodeInput
+                onPromoCodeApplied={handlePromoCodeApplied}
+                appliedPromoCode={appliedPromoCode}
+            />
+
+            <Separator />
+
+            <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground font-medium">Subtotal</span>
+                    <span className="font-bold">
+                        Rs.{Number(subtotalAmount).toLocaleString("en-IN")}
+                    </span>
+                </div>
+
+                {appliedPromoCode && (
+                    <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground font-medium">
+                            Discount ({appliedPromoCode.discount_percentage}%)
+                        </span>
+                        <span className="font-bold text-green-600">
+                            -Rs.{Number(discountAmount).toLocaleString("en-IN")}
+                        </span>
+                    </div>
+                )}
+
+                <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground font-medium">Delivery</span>
+                    <span className="font-bold">
+                        Rs.{Number(deliveryCharge).toLocaleString("en-IN")}
+                    </span>
+                </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+                <span className="text-lg font-black italic">TOTAL</span>
+                <div className="text-right">
+                    <span className="text-2xl font-black text-primary">
+                        Rs.{Number(totalAmount).toLocaleString("en-IN")}
+                    </span>
+                </div>
+            </div>
+
+            <div className="pt-4">
+                <div className="flex items-center gap-2 p-3 border-2 border-primary bg-primary/5 rounded-xl mb-4">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                        <Check size={16} />
+                    </div>
+                    <div>
+                        <p className="font-bold text-xs uppercase tracking-wider">Cash on Delivery</p>
+                        <p className="text-[10px] text-muted-foreground font-medium">Pay when you receive</p>
+                    </div>
+                </div>
+
+                <Button
+                    type="submit"
+                    form="checkout-form"
+                    className="w-full h-14 rounded-xl text-lg font-black shadow-lg shadow-primary/10 transition-transform active:scale-[0.98]"
+                    disabled={isSubmitting || createOrderMutation.isPending}
+                >
+                    {isSubmitting || createOrderMutation.isPending
+                        ? "Processing..."
+                        : `PLACE ORDER`}
+                </Button>
+            </div>
+        </div>
+    );
 
     if (cartItems.length === 0) {
         return (
             <div className="h-[60vh] flex flex-col items-center justify-center px-4 text-center">
-                <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-6 text-muted-foreground/30">
-                    <Truck size={40} />
-                </div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">Your cart is empty</h2>
-                <p className="text-muted-foreground mb-8">Add some premium items to your cart before checking out.</p>
-                <Button onClick={() => router.push('/collections')} className="bg-primary hover:bg-primary/90">Return to Shop</Button>
+                <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
+                <p className="text-muted-foreground mb-8">Add components to your cart to see them here.</p>
+                <Button onClick={() => router.push("/collections")}>Return to Shop</Button>
             </div>
         );
     }
 
     return (
-        <section className="py-12 md:py-20 px-4 max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl px-4 py-12 md:py-20">
             <button onClick={() => router.back()} className="mb-8 flex items-center gap-2 text-muted-foreground hover:text-foreground font-medium transition-colors">
-                <ChevronLeft size={18} /> Back to Shopping
+                <ChevronLeft size={18} /> Back
             </button>
 
             <div className="mb-12">
                 <h1 className="text-4xl font-black text-foreground">Checkout</h1>
-                <p className="text-muted-foreground">Complete your premium order</p>
+                <p className="text-muted-foreground font-medium">Complete your premium order</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-12">
-                {/* Shipping & Billing Info */}
-                <div className="flex-1 space-y-10">
-                    <div className="space-y-6">
-                        <h3 className="text-xl font-bold flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-secondary text-primary flex items-center justify-center text-sm font-black">1</div>
-                            Shipping Information
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>First Name</Label>
-                                <Input placeholder="John" required className="rounded-xl border-border" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Last Name</Label>
-                                <Input placeholder="Doe" required className="rounded-xl border-border" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Address</Label>
-                            <Input placeholder="123 Luxury Lane" required className="rounded-xl border-border" />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label>City</Label>
-                                <Input placeholder="New York" required className="rounded-xl border-border" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Zip Code</Label>
-                                <Input placeholder="10001" required className="rounded-xl border-border" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Country</Label>
-                                <Input placeholder="USA" required className="rounded-xl border-border" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Email Address</Label>
-                            <Input type="email" placeholder="john@example.com" required className="rounded-xl border-border" />
-                        </div>
-                    </div>
+            <div className="flex flex-col gap-12 lg:grid lg:grid-cols-3">
+                {/* Shipping Information */}
+                <div className="lg:col-span-2 space-y-8">
+                    <Card className="border-none shadow-none bg-transparent">
+                        <CardHeader className="px-0 pt-0">
+                            <CardTitle className="text-2xl font-bold">Shipping Information</CardTitle>
+                            <CardDescription className="text-base font-medium">
+                                Please fill in your details to complete your order
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="px-0">
+                            <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="customer_name" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Full Name</Label>
+                                        <Input
+                                            id="customer_name"
+                                            placeholder="Enter your full name"
+                                            className="h-12 rounded-xl border-border bg-secondary/30 focus:bg-background transition-colors"
+                                            {...register("customer_name")}
+                                        />
+                                        {errors.customer_name && (
+                                            <p className="text-xs font-bold text-destructive">
+                                                {errors.customer_name.message}
+                                            </p>
+                                        )}
+                                    </div>
 
-                    <div className="space-y-6">
-                        <h3 className="text-xl font-bold flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-secondary text-primary flex items-center justify-center text-sm font-black">2</div>
-                            Payment Method
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-4 rounded-2xl border-2 border-primary bg-secondary flex items-center gap-4 cursor-pointer">
-                                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                    <CreditCard strokeWidth={2.5} size={20} />
+                                    <div className="space-y-2">
+                                        <Label htmlFor="customer_email" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Email</Label>
+                                        <Input
+                                            id="customer_email"
+                                            type="email"
+                                            placeholder="your@email.com"
+                                            className="h-12 rounded-xl border-border bg-secondary/30 focus:bg-background transition-colors"
+                                            {...register("customer_email")}
+                                        />
+                                        {errors.customer_email && (
+                                            <p className="text-xs font-bold text-destructive">
+                                                {errors.customer_email.message}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-bold text-sm text-foreground">Credit / Debit Card</p>
-                                    <p className="text-xs text-primary font-bold">Secure Processing</p>
+
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="customer_phone" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Phone Number</Label>
+                                        <Input
+                                            id="customer_phone"
+                                            placeholder="98********"
+                                            className="h-12 rounded-xl border-border bg-secondary/30 focus:bg-background transition-colors"
+                                            {...register("customer_phone")}
+                                        />
+                                        {errors.customer_phone && (
+                                            <p className="text-xs font-bold text-destructive">
+                                                {errors.customer_phone.message}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">City/District</Label>
+                                        <Popover
+                                            open={openBillingCity}
+                                            onOpenChange={setOpenBillingCity}
+                                        >
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={openBillingCity}
+                                                    className={cn(
+                                                        "w-full h-12 justify-between rounded-xl border-border bg-secondary/30 font-medium",
+                                                        !cityDistrict && "text-muted-foreground"
+                                                    )}
+                                                    disabled={isSubmitting || isLoadingDeliveryCharges}
+                                                >
+                                                    {cityDistrict || "Select city/district"}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-xl" align="start">
+                                                <Command>
+                                                    <CommandInput
+                                                        placeholder="Search..."
+                                                        value={searchQuery}
+                                                        onValueChange={setSearchQuery}
+                                                    />
+                                                    <CommandList>
+                                                        <CommandEmpty>No results found.</CommandEmpty>
+                                                        <CommandGroup className="max-h-64 overflow-auto">
+                                                            {citiesDistricts.map(city => (
+                                                                <CommandItem
+                                                                    key={city}
+                                                                    value={city}
+                                                                    onSelect={() => {
+                                                                        setValue("city", city);
+                                                                        setOpenBillingCity(false);
+                                                                        setSearchQuery("");
+                                                                    }}
+                                                                >
+                                                                    <Check
+                                                                        className={cn(
+                                                                            "mr-2 h-4 w-4",
+                                                                            cityDistrict === city
+                                                                                ? "opacity-100"
+                                                                                : "opacity-0"
+                                                                        )}
+                                                                    />
+                                                                    {city}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
+                                        {errors.city && (
+                                            <p className="text-xs font-bold text-destructive">
+                                                {errors.city.message}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="p-4 rounded-2xl border-2 border-border hover:border-border/80 flex items-center gap-4 cursor-pointer transition-colors bg-secondary/30">
-                                <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center shrink-0">
-                                    <div className="w-6 h-6 bg-primary rounded-lg flex items-center justify-center text-[10px] text-primary-foreground font-bold">Pay</div>
-                                </div>
-                                <div>
-                                    <p className="font-bold text-sm text-foreground">Digital Wallet</p>
-                                    <p className="text-xs text-muted-foreground font-medium">Apple / Google Pay</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="space-y-4 pt-2">
-                            <div className="space-y-2">
-                                <Label>Card Number</Label>
-                                <Input placeholder="**** **** **** ****" required className="rounded-xl border-border" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
+
                                 <div className="space-y-2">
-                                    <Label>Expiry Date</Label>
-                                    <Input placeholder="MM / YY" required className="rounded-xl border-border" />
+                                    <Label htmlFor="customer_address" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Full Address</Label>
+                                    <Textarea
+                                        id="customer_address"
+                                        placeholder="Area, Street, House No."
+                                        className="rounded-xl border-border bg-secondary/30 focus:bg-background transition-colors min-h-[100px]"
+                                        {...register("customer_address")}
+                                    />
+                                    {errors.customer_address && (
+                                        <p className="text-xs font-bold text-destructive">
+                                            {errors.customer_address.message}
+                                        </p>
+                                    )}
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>CVC</Label>
-                                    <Input placeholder="***" required className="rounded-xl border-border" />
+
+                                <div className="flex items-center space-x-2 bg-secondary/20 p-4 rounded-xl">
+                                    <Checkbox
+                                        id="same_as_customer_address"
+                                        checked={sameAsCustomerAddress}
+                                        onCheckedChange={checked =>
+                                            setValue("same_as_customer_address", checked === true)
+                                        }
+                                    />
+                                    <Label
+                                        htmlFor="same_as_customer_address"
+                                        className="text-sm font-bold cursor-pointer"
+                                    >
+                                        Shipping address same as billing
+                                    </Label>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="p-6 bg-primary rounded-3xl text-primary-foreground flex items-center gap-6 shadow-xl shadow-primary/5">
-                        <div className="w-14 h-14 rounded-2xl bg-primary-foreground/10 flex items-center justify-center text-primary-foreground/80 shrink-0">
-                            <ShieldCheck size={32} />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-lg">Safe & Secure Transaction</h4>
-                            <p className="text-primary-foreground/60 text-sm">Your information is protected by 256-bit SSL encryption.</p>
-                        </div>
-                    </div>
-                </div>
+                                {!sameAsCustomerAddress && (
+                                    <div className="space-y-6 animate-in slide-in-from-top-2">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Shipping City/District</Label>
+                                            <Popover
+                                                open={openShippingCity}
+                                                onOpenChange={setOpenShippingCity}
+                                            >
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        role="combobox"
+                                                        className={cn(
+                                                            "w-full h-12 justify-between rounded-xl border-border bg-secondary/30 font-medium",
+                                                            !shippingCityDistrict && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {shippingCityDistrict || "Select shipping city"}
+                                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-xl">
+                                                    <Command>
+                                                        <CommandInput
+                                                            placeholder="Search..."
+                                                            value={searchQuery}
+                                                            onValueChange={setSearchQuery}
+                                                        />
+                                                        <CommandList>
+                                                            <CommandEmpty>No results found.</CommandEmpty>
+                                                            <CommandGroup className="max-h-64 overflow-auto">
+                                                                {citiesDistricts.map(city => (
+                                                                    <CommandItem
+                                                                        key={city}
+                                                                        value={city}
+                                                                        onSelect={() => {
+                                                                            setValue("shipping_city", city);
+                                                                            setOpenShippingCity(false);
+                                                                            setSearchQuery("");
+                                                                        }}
+                                                                    >
+                                                                        <Check className={cn("mr-2 h-4 w-4", shippingCityDistrict === city ? "opacity-100" : "opacity-0")} />
+                                                                        {city}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
 
-                {/* Order Summary */}
-                <div className="w-full lg:w-[400px]">
-                    <div className="bg-card border border-border/50 rounded-3xl overflow-hidden sticky top-24 shadow-xl shadow-secondary/20">
-                        <div className="p-6 bg-secondary/50 border-b border-border/50">
-                            <h3 className="font-bold text-foreground text-lg">Order Summary</h3>
-                        </div>
-                        <div className="p-6">
-                            <div className="space-y-5 max-h-[400px] overflow-y-auto mb-6 pr-2 custom-scrollbar">
-                                {cartItems.map(item => (
-                                    <div key={item.product.id} className="flex gap-4">
-                                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0 shadow-sm">
-                                            <Image
-                                                src={item.product.thumbnail_image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&q=80'}
-                                                alt={item.product.name}
-                                                width={80}
-                                                height={80}
-                                                className="w-full h-full object-cover"
+                                        <div className="space-y-2">
+                                            <Label htmlFor="shipping_address" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Shipping Address</Label>
+                                            <Textarea
+                                                id="shipping_address"
+                                                placeholder="Enter your shipping address"
+                                                className="rounded-xl border-border bg-secondary/30 focus:bg-background transition-colors min-h-[100px]"
+                                                {...register("shipping_address")}
                                             />
                                         </div>
-                                        <div className="flex-1 flex flex-col justify-center">
-                                            <h4 className="text-sm font-bold text-foreground line-clamp-1">{item.product.name}</h4>
-                                            <p className="text-[10px] text-primary font-bold uppercase tracking-widest mt-1">QTY: {item.quantity}</p>
-                                            <p className="text-base font-black text-foreground mt-1">${(item.selectedVariant ? parseFloat(item.selectedVariant.price) : parseFloat(item.product.price)) * item.quantity}</p>
-                                        </div>
                                     </div>
-                                ))}
-                            </div>
+                                )}
 
-                            <div className="space-y-4 pt-6 border-t border-border">
-                                <div className="flex justify-between text-sm text-muted-foreground font-medium">
-                                    <span>Subtotal</span>
-                                    <span className="font-bold text-foreground">${totalPrice}</span>
+                                <div className="space-y-2">
+                                    <Label htmlFor="note" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Order Notes (Optional)</Label>
+                                    <Textarea
+                                        id="note"
+                                        placeholder="Instructions for delivery..."
+                                        className="rounded-xl border-border bg-secondary/30 focus:bg-background transition-colors"
+                                        {...register("note")}
+                                    />
+                                    <p className="text-[10px] text-right font-bold text-muted-foreground uppercase">
+                                        {watch("note")?.length || 0} / 500
+                                    </p>
                                 </div>
-                                <div className="flex justify-between text-sm text-muted-foreground font-medium">
-                                    <span>Shipping</span>
-                                    <span className="font-bold text-foreground">${shipping}</span>
-                                </div>
-                                <div className="flex justify-between text-sm text-muted-foreground font-medium">
-                                    <span>Taxes</span>
-                                    <span className="font-bold text-foreground">${tax}</span>
-                                </div>
-                                <div className="flex justify-between text-xl font-black text-foreground pt-5 mt-5 border-t-2 border-foreground">
-                                    <span>Total</span>
-                                    <span>${total}</span>
-                                </div>
-                            </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
 
-                            <Button
-                                type="submit"
-                                className="w-full mt-8 bg-primary hover:bg-primary/90 text-primary-foreground h-14 rounded-xl text-lg font-bold shadow-lg shadow-primary/10"
-                                disabled={loading}
-                            >
-                                {loading ? 'Processing...' : `Pay $${total}`}
-                            </Button>
-                            <p className="text-[10px] text-muted-foreground text-center mt-6 font-medium">
-                                By clicking &quot;Pay&quot;, you agree to our <span className="underline cursor-pointer">Terms and Conditions</span>.
-                            </p>
-                        </div>
+                {/* Desktop: Order Summary */}
+                <div className="lg:col-span-1">
+                    <div className="sticky top-24">
+                        <Card className="rounded-3xl border-border/50 shadow-xl shadow-secondary/20 overflow-hidden">
+                            <CardHeader className="bg-secondary/20 border-b border-border/50">
+                                <CardTitle className="text-xl font-bold">Order Summary</CardTitle>
+                                <CardDescription className="font-medium">
+                                    {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6">
+                                <OrderSummaryContent />
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
-            </form>
-        </section>
+            </div>
+        </div>
     );
 };
 
