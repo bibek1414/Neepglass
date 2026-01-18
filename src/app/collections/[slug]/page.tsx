@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Star, Heart, Share2, Shield, Truck, RotateCcw, Plus, Minus, Info, ArrowLeft } from 'lucide-react';
+import { Star, Heart, Share2, Shield, Truck, Plus, Minus, Info, ArrowLeft } from 'lucide-react';
 import { useProduct } from '@/hooks/use-product';
 import { useCart } from '@/hooks/use-cart';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ const ProductDetailsPage = () => {
                     <Info size={40} />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-900 mb-2">Product Not Found</h2>
-                <p className="text-slate-500 mb-8">The product you're looking for might have been moved or doesn't exist.</p>
+                <p className="text-slate-500 mb-8">The product you&apos;re looking for might have been moved or doesn&apos;t exist.</p>
                 <Button onClick={() => router.push('/collections')}>Back to Shop</Button>
             </div>
         );
@@ -209,7 +209,7 @@ const ProductDetailsPage = () => {
                                         </div>
                                         <span className="text-xs text-slate-400">3 weeks ago</span>
                                     </div>
-                                    <p className="text-slate-600 text-sm italic">"Absolutely love this! The quality surpassed my expectations. It arrived perfectly packaged and works like a charm. Will definitely be buying more from Lumina."</p>
+                                    <p className="text-slate-600 text-sm italic">&quot;Absolutely love this! The quality surpassed my expectations. It arrived perfectly packaged and works like a charm. Will definitely be buying more from Lumina.&quot;</p>
                                 </div>
                             ))}
                             <Button variant="outline" className="border-2 border-slate-200 font-bold">Write A Review</Button>

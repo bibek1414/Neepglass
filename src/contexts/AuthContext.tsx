@@ -27,7 +27,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
 
-export const CustomerPublishAuthProvider = ({
+export const AuthProvider = ({
   children,
 }: {
   children: ReactNode;
@@ -150,17 +150,6 @@ export const CustomerPublishAuthProvider = ({
     }
   };
 
-  // Helper function to check if a page exists (you might need to implement this based on your API)
-  const checkPageExists = async (
-    siteUser: string,
-    page: string
-  ): Promise<boolean> => {
-    try {
-      return page === "home";
-    } catch (error) {
-      return false;
-    }
-  };
 
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const login = async (data: any) => {
@@ -209,69 +198,13 @@ export const CustomerPublishAuthProvider = ({
           if (redirectParam) {
             router.push(decodeURIComponent(redirectParam));
           } else {
-            // FIXED: Extract siteUser (subdomain) from current URL path
-            const currentPath = window.location.pathname;
-            const pathSegments = currentPath.split("/").filter(Boolean);
-
-            // Find the siteUser from the URL pattern /publish/{siteUser}/login
-            let siteUser = null;
-            const publishIndex = pathSegments.indexOf("publish");
-            if (publishIndex !== -1 && publishIndex + 1 < pathSegments.length) {
-              // Get the subdomain that comes after /publish/
-              siteUser = pathSegments[publishIndex + 1];
-            }
-
-            // If we couldn't extract subdomain from URL path, try getting it from window.location.host
-            if (!siteUser) {
-              const hostname = window.location.hostname;
-              // Check if we're on a subdomain (e.g., bibek.localhost or bibek.nepdora.com)
-              if (hostname.includes(".localhost")) {
-                siteUser = hostname.split(".")[0];
-              } else if (
-                hostname.includes(".nepdora.com") &&
-                hostname !== "nepdora.com" &&
-                hostname !== "www.nepdora.com"
-              ) {
-                siteUser = hostname.split(".")[0];
-              }
-            }
-
-            // Only fallback to user ID if we still don't have siteUser
-            // This should rarely happen in normal subdomain-based routing
-            if (!siteUser) {
-              console.warn(
-                "Could not determine subdomain, falling back to user ID"
-              );
-              siteUser = loggedInUser.id?.toString() || loggedInUser.email;
-            }
-
-            try {
-              // Try to check if home page exists
-              const homePageExists = await checkPageExists(siteUser, "home");
-
-              if (homePageExists) {
-                router.push(`/home`);
-              } else {
-                // Fallback to base publish URL
-                router.push(``);
-              }
-            } catch (error) {
-              console.warn(
-                "Could not check page existence, using fallback:",
-                error
-              );
-              // If page check fails, try home first
-              router.push(`/home`);
-            }
+            // Simply redirect to home page
+            router.push("/");
           }
         }
       } else {
         // Server-side rendering fallback
-        // In SSR context, we should have access to the original request path
-        console.warn("SSR context detected - using fallback redirect");
-        router.push(
-          `/publish/${loggedInUser.id?.toString() || loggedInUser.email}/home`
-        );
+        router.push("/");
       }
       //eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -301,33 +234,10 @@ export const CustomerPublishAuthProvider = ({
 
       delete signupData.confirmPassword;
 
-      const response = await signupUser(signupData);
 
       // Don't auto-login after signup, just redirect to login page
       toast.success("Account created successfully! Please log in to continue.");
-
-      // FIXED: Extract siteUser from current URL path and redirect to publish-specific login
-      if (typeof window !== "undefined") {
-        const currentPath = window.location.pathname;
-        const pathSegments = currentPath.split("/");
-
-        // Find the siteUser from the URL pattern /publish/{siteUser}/signup
-        let siteUser = null;
-        const publishIndex = pathSegments.indexOf("publish");
-        if (publishIndex !== -1 && publishIndex + 1 < pathSegments.length) {
-          siteUser = pathSegments[publishIndex + 1];
-        }
-
-        if (siteUser) {
-          router.push(`/login`);
-        } else {
-          // Fallback to general login page if siteUser cannot be determined
-          router.push("/login");
-        }
-      } else {
-        // Fallback for server-side rendering
-        router.push("/login");
-      }
+      router.push("/login");
       //eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage = getErrorMessage(error);

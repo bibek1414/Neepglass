@@ -15,10 +15,14 @@ export const signupSchema = z
       .string()
       .min(1, { message: "Last name is required." })
       .optional(),
-    phone: z.string().optional(),
+    phone: z
+      .string()
+      .min(10, { message: "Phone number must be at least 10 digits." })
+      .optional()
+      .or(z.literal("")),
     address: z.string().optional(),
   })
-  .refine(data => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });

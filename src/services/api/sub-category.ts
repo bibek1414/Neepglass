@@ -15,7 +15,7 @@ import {
 
 export const useSubCategoryApi = {
   getSubCategories: async (
-    params: PaginationParams = {}
+    params: PaginationParams = {},
   ): Promise<GetSubCategoriesResponse> => {
     const {
       page = 1,
@@ -42,12 +42,16 @@ export const useSubCategoryApi = {
       queryParams.append("sort_order", sortOrder);
     }
 
+    if (params.category) {
+      queryParams.append("category", params.category.toString());
+    }
+
     const response = await fetch(
       `${API_BASE_URL}/api/sub-category/?${queryParams.toString()}`,
       {
         method: "GET",
         headers: createHeaders(),
-      }
+      },
     );
 
     await handleApiError(response);
@@ -86,7 +90,7 @@ export const useSubCategoryApi = {
   },
 
   createSubCategory: async (
-    data: CreateSubCategoryRequest | FormData
+    data: CreateSubCategoryRequest | FormData,
   ): Promise<CreateSubCategoryResponse> => {
     const API_BASE_URL = siteConfig.apiBaseUrl;
 
@@ -122,7 +126,7 @@ export const useSubCategoryApi = {
 
   updateSubCategory: async (
     slug: string,
-    data: UpdateSubCategoryRequest | FormData
+    data: UpdateSubCategoryRequest | FormData,
   ): Promise<UpdateSubCategoryResponse> => {
     const API_BASE_URL = siteConfig.apiBaseUrl;
 
@@ -154,7 +158,7 @@ export const useSubCategoryApi = {
   },
 
   deleteSubCategory: async (
-    slug: string
+    slug: string,
   ): Promise<DeleteSubCategoryResponse> => {
     const API_BASE_URL = siteConfig.apiBaseUrl;
     const response = await fetch(`${API_BASE_URL}/api/sub-category/${slug}/`, {
