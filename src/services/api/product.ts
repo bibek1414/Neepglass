@@ -86,8 +86,7 @@ const buildProductFormData = (
   });
 
   // Debug log
-  console.log("FormData contents:");
-  for (const [key, value] of formData.entries()) {
+  Array.from(formData.entries()).forEach(([key, value]) => {
     if (value instanceof File) {
       console.log(
         `${key}: File(${value.name}, ${value.size} bytes, ${value.type})`,
@@ -95,7 +94,7 @@ const buildProductFormData = (
     } else {
       console.log(`${key}: ${value}`);
     }
-  }
+  });
 
   return formData;
 };

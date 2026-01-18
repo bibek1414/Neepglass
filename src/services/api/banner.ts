@@ -70,7 +70,7 @@ export const bannerApi = {
   createBannerWithImages: async (
     data: CreateBannerWithImagesRequest,
   ): Promise<Banner> => {
-    const formData = prepareFormData(data, false);
+    const formData = prepareFormData(data);
 
     const response = await fetch(`${API_BASE_URL}/api/banners/`, {
       method: "POST",
@@ -97,7 +97,7 @@ export const bannerApi = {
     id: number,
     data: UpdateBannerWithImagesRequest,
   ): Promise<Banner> => {
-    const formData = prepareFormData(data, true);
+    const formData = prepareFormData(data);
 
     const response = await fetch(`${API_BASE_URL}/api/banners/${id}/`, {
       method: "PATCH",

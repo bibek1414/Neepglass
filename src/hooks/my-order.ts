@@ -11,8 +11,8 @@ import {
   OrderFilters,
   OrdersResponse,
   StatusCounts,
+  Order,
 } from "@/types/my-orders";
-import { Order } from "@/types/orders";
 import { useMemo } from "react";
 
 // Query keys for my-orders
@@ -25,7 +25,7 @@ export const myOrderKeys = {
 
 // Hook to fetch my order status counts from API
 export const useMyOrderStatusCounts = (
-  options?: Omit<UseQueryOptions<StatusCounts, Error>, "queryKey" | "queryFn">
+  options?: Omit<UseQueryOptions<StatusCounts, Error>, "queryKey" | "queryFn">,
 ) => {
   return useQuery({
     queryKey: myOrderKeys.statusCounts(),
@@ -41,7 +41,10 @@ export const useMyOrderStatusCounts = (
 // Get my orders hook
 export const useMyOrders = (
   filters: OrderFilters = {},
-  options?: Omit<UseQueryOptions<OrdersResponse, Error>, "queryKey" | "queryFn">
+  options?: Omit<
+    UseQueryOptions<OrdersResponse, Error>,
+    "queryKey" | "queryFn"
+  >,
 ) => {
   // Provide default values for filters
   const defaultFilters: OrderFilters = {
@@ -62,7 +65,7 @@ export const useMyOrders = (
 
 // Calculate status counts from orders data (fallback method)
 export const useCalculatedMyOrderStatusCounts = (
-  orders: Order[]
+  orders: Order[],
 ): StatusCounts => {
   return useMemo(() => {
     const counts: StatusCounts = {
@@ -75,7 +78,7 @@ export const useCalculatedMyOrderStatusCounts = (
       cancelled: 0,
     };
 
-    orders.forEach(order => {
+    orders.forEach((order) => {
       // Type-safe status counting
       switch (order.status) {
         case "pending":

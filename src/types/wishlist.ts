@@ -1,4 +1,4 @@
-import { Product } from "../owner-site/admin/product";
+import { Product } from "./product";
 
 export interface WishlistItem {
   id: number;
