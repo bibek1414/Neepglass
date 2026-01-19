@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import BlogListingContent from "@/components/news/BlogListingContent";
 import { Metadata } from "next";
 
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function BlogListingPage() {
-    return <BlogListingContent />;
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BlogListingContent />
+        </Suspense>
+    );
 }
