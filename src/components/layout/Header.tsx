@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { useSiteConfig } from '@/hooks/use-site-config';
 import Image from 'next/image';
 import { Skeleton } from '../ui/skeleton';
+import { SearchBar } from './SearchBar';
 
 export const Header: React.FC<{ onCartOpen: () => void }> = ({ onCartOpen }) => {
     const { itemCount } = useCart();
@@ -65,9 +66,9 @@ export const Header: React.FC<{ onCartOpen: () => void }> = ({ onCartOpen }) => 
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 sm:gap-4">
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hidden sm:inline-flex">
-                            <Search size={22} />
-                        </Button>
+                        <div className="hidden sm:block flex-1 max-w-sm mx-4">
+                            <SearchBar />
+                        </div>
 
                         <Link href="/wishlist" className="p-2 text-muted-foreground hover:text-primary transition-colors relative">
                             <Heart size={22} />

@@ -48,7 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            "border-input file:text-foreground flex h-12 w-full rounded-lg border bg-white/80 px-4 py-3 text-base ring-0 transition-all duration-200 outline-none file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-transparent focus-visible:ring-0 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+            "border-input file:text-foreground flex h-12 w-full rounded-lg border bg-white/80 px-4 py-3 text-base ring-0 transition-all duration-200 outline-none file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:ring-0 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
             label && "pt-7",
             className
           )}
