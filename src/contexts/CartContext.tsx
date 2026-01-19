@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
 import { CartItem } from "@/types/cart";
 import {
   Product,
@@ -54,30 +54,39 @@ interface CartProviderProps {
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     // Load cart from localStorage on initial render
-    try {
-      const storedCart = localStorage.getItem("nepdora_cart");
-      if (storedCart) {
-        setCartItems(JSON.parse(storedCart));
+    const loadCart = () => {
+      try {
+        const storedCart = localStorage.getItem("nepdora_cart");
+        if (storedCart) {
+          setCartItems(JSON.parse(storedCart));
+        }
+      } catch (error) {
+        console.error("Failed to load cart from localStorage", error);
+        setCartItems([]);
+      } finally {
+        setIsInitialized(true);
       }
-    } catch (error) {
-      console.error("Failed to load cart from localStorage", error);
-      setCartItems([]);
-    }
+    };
+
+    loadCart();
   }, []);
 
   useEffect(() => {
-    // Save cart to localStorage whenever it changes
+    // Save cart to localStorage whenever it changes, but only after initialization
+    if (!isInitialized) return;
+
     try {
       localStorage.setItem("nepdora_cart", JSON.stringify(cartItems));
     } catch (error) {
       console.error("Failed to save cart to localStorage", error);
     }
-  }, [cartItems]);
+  }, [cartItems, isInitialized]);
 
-  const addToCart = (
+  const addToCart = useCallback((
     product: CartableProduct,
     quantity: number,
     selectedVariant?: {
@@ -121,9 +130,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         },
       ];
     });
-  };
+  }, []);
 
-  const removeFromCart = (productId: number, variantId?: number | null) => {
+  const removeFromCart = useCallback((productId: number, variantId?: number | null) => {
     setCartItems(prevItems =>
       prevItems.filter(item => {
         const productMatch = item.product.id === productId;
@@ -133,9 +142,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         return !(productMatch && variantMatch);
       })
     );
-  };
+  }, []);
 
-  const updateQuantity = (
+  const updateQuantity = useCallback((
     productId: number,
     quantity: number,
     variantId?: number | null
@@ -152,11 +161,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         })
       );
     }
-  };
+  }, [removeFromCart]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([]);
-  };
+  }, []);
 
   const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
@@ -168,7 +177,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return total + price * item.quantity;
   }, 0);
 
-  const value = {
+  const value = useMemo(() => ({
     cartItems,
     addToCart,
     removeFromCart,
@@ -176,7 +185,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     clearCart,
     itemCount,
     totalPrice,
-  };
+  }), [cartItems, addToCart, removeFromCart, updateQuantity, clearCart, itemCount, totalPrice]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
