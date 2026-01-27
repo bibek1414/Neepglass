@@ -36,7 +36,13 @@ const ImageWithFallback = (props: ImageWithFallbackProps) => {
         }
     };
 
-    const isEditable = !!rest.id;
+    const isDevelopment = process.env.NODE_ENV === 'development' ||
+        (typeof window !== 'undefined' &&
+            (window.location.hostname === 'localhost' ||
+                window.location.hostname.endsWith('.webcontainer.io') ||
+                window.location.hostname.endsWith('.stackblitz.io')));
+
+    const isEditable = !!rest.id && isDevelopment;
 
     const imageElement = (
         <Image
