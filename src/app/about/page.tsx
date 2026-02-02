@@ -1,4 +1,10 @@
 import React from 'react';
+import { constructMetadata } from '@/config/metadata';
+
+export const metadata = constructMetadata({
+  title: 'About Us | NepGlass',
+  description: 'Learn about NepGlass, our vision for better vision in Nepal, and our commitment to premium eyewear.',
+});
 
 export default function AboutPage() {
   return (
@@ -27,10 +33,10 @@ export default function AboutPage() {
             <div>
               <h2 className="text-primary mt-0">Why NepGlass?</h2>
               <p className="text-gray-600 mb-6">
-              At NepGlass, we see eyewear as more than just a visual aid — it&apos;s a statement of style, comfort, and confidence. Based in Nepal, we specialize in premium lens solutions, stylish frames, and trendsetting sunglasses that elevate everyday look and protect your vision.
+                At NepGlass, we see eyewear as more than just a visual aid — it&apos;s a statement of style, comfort, and confidence. Based in Nepal, we specialize in premium lens solutions, stylish frames, and trendsetting sunglasses that elevate everyday look and protect your vision.
               </p>
               <p className="text-gray-600 mb-6">
-              We combine quality craftsmanship with modern aesthetics, offering a curated selection of products suited for every face, lifestyle, and budget. Whether you&apos;re updating your prescription lenses, choosing a classic frame, or picking out polarized sunglasses for sunny days, NepGlass makes the experience seamless and personal.
+                We combine quality craftsmanship with modern aesthetics, offering a curated selection of products suited for every face, lifestyle, and budget. Whether you&apos;re updating your prescription lenses, choosing a classic frame, or picking out polarized sunglasses for sunny days, NepGlass makes the experience seamless and personal.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">

@@ -1,8 +1,12 @@
-'use client';
-
 import React from 'react';
 import ContactInfo from '@/components/contact/ContactInfo';
 import ContactForm from '@/components/contact/ContactForm';
+import { constructMetadata } from '@/config/metadata';
+
+export const metadata = constructMetadata({
+  title: 'Contact Us | NepGlass',
+  description: 'Get in touch with NepGlass for inquiries about our premium eyewear and lens solutions.',
+});
 
 export default function ContactPage() {
   return (

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -11,10 +11,10 @@ import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "NepGlass | Premium Eyewear in Nepal",
-  description: "Specializing in premium lens solutions, stylish frames, and trendsetting sunglasses designed for style and comfort.",
-};
+import { constructMetadata } from "@/config/metadata";
+
+export const metadata = constructMetadata();
+
 
 export default function RootLayout({
   children,
