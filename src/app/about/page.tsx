@@ -1,6 +1,6 @@
 import React from 'react';
 import { constructMetadata } from '@/config/metadata';
-import Image from 'next/image';
+import ImageWithFallback from '@/components/common/ImageWithFallback';
 
 export const metadata = constructMetadata({
   title: 'About Us | NepGlass',
@@ -24,12 +24,14 @@ export default function AboutPage() {
       <div className="py-20">
         <div className="container-custom grid md:grid-cols-2 gap-20 items-center">
           <div>
-            <Image
+            <ImageWithFallback
               src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800"
+              fallbackSrc="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800"
               width={800}
               height={600}
               alt="Craftsmanship"
               className="rounded-2xl shadow-xl"
+              id="about-craftsmanship-image"
             />
           </div>
           <div>

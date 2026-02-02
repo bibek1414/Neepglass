@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import ImageWithFallback from '@/components/common/ImageWithFallback';
 import React from 'react';
 
 const steps = [
@@ -46,12 +46,14 @@ export default function LensProcess() {
                             className="flex flex-col items-start text-left p-6 bg-white rounded-2xl"
                         >
                             <div className="mb-4 w-24 h-24 flex items-center justify-center overflow-hidden rounded-full">
-                                <Image
+                                <ImageWithFallback
                                     width={100}
                                     height={100}
                                     src={step.img}
+                                    fallbackSrc={step.img}
                                     alt={step.title}
                                     className="w-full h-full object-cover rounded-full"
+                                    id={`lens-process-${step.title.toLowerCase().replace(/\s/g, '-')}`}
                                 />
                             </div>
                             <h3 className="text-lg font-bold text-primary mb-2">{step.title}</h3>

@@ -40,6 +40,7 @@ function HomeContent() {
                 image="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800"
                 ctaText="View Lens Options"
                 ctaLink="/products"
+                imageId="feature-split-clarity"
             />
 
             {/* 5. Best Selling Products */}
@@ -62,6 +63,7 @@ function HomeContent() {
                 ctaText="Explore Collections"
                 ctaLink="/products"
                 reverse={true}
+                imageId="feature-split-style"
             />
             <LensProcess />
             {/* 8. Latest Products */}

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Button from '@/components/ui/BrandButton';
 import { ChevronRight } from 'lucide-react';
-import Image from 'next/image';
+import ImageWithFallback from '@/components/common/ImageWithFallback';
 
 interface FeatureSplitProps {
     title: string;
@@ -14,6 +14,7 @@ interface FeatureSplitProps {
     ctaText?: string;
     ctaLink?: string;
     reverse?: boolean;
+    imageId?: string;
 }
 
 export default function FeatureSplit({
@@ -23,7 +24,8 @@ export default function FeatureSplit({
     image,
     ctaText = "Learn More",
     ctaLink = "/about",
-    reverse = false
+    reverse = false,
+    imageId
 }: FeatureSplitProps) {
     return (
         <section className="py-20 bg-white">
@@ -31,12 +33,14 @@ export default function FeatureSplit({
                 <div className={`order-2 ${reverse ? 'md:order-2' : 'md:order-1'}`}>
                     <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                         <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
-                        <Image
+                        <ImageWithFallback
                             src={image}
+                            fallbackSrc={image}
                             alt={title}
                             width={800}
                             height={600}
                             className="w-full h-full object-cover aspect-4/3 hover:scale-105 transition-transform duration-700"
+                            id={imageId || `feature-split-${title.toLowerCase().replace(/\s/g, '-')}`}
                         />
                     </div>
                 </div>
