@@ -1,5 +1,6 @@
 import React from 'react';
 import { constructMetadata } from '@/config/metadata';
+import Image from 'next/image';
 
 export const metadata = constructMetadata({
   title: 'About Us | NepGlass',
@@ -8,23 +9,25 @@ export const metadata = constructMetadata({
 
 export default function AboutPage() {
   return (
-    <div className="pb-20">
+    <div className="">
       {/* Header */}
-      <section className="bg-gray-50 pt-32 pb-20">
+      <div className="bg-gray-50 pt-32 ">
         <div className="container-custom">
           <h1 className="text-primary max-w-2xl">Our Vision for Better Vision in Nepal</h1>
           <p className="text-xl text-gray-600 max-w-2xl mt-6">
             At NepGlass, we see eyewear as more than just a visual aid — it’s a statement of style, comfort, and confidence.
           </p>
         </div>
-      </section>
+      </div>
 
       {/* Story */}
-      <section className="py-20">
+      <div className="py-20">
         <div className="container-custom grid md:grid-cols-2 gap-20 items-center">
           <div>
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800"
+              width={800}
+              height={600}
               alt="Craftsmanship"
               className="rounded-2xl shadow-xl"
             />
@@ -59,10 +62,10 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Philosophy */}
-      <section className="py-20 bg-primary text-white">
+      <div className="py-20 bg-primary text-white">
         <div className="container-custom text-center max-w-3xl">
           <h2 className="text-white mt-0">Our Philosophy</h2>
           <p className="text-lg text-gray-300 italic">
@@ -83,7 +86,7 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

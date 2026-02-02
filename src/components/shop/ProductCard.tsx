@@ -6,6 +6,7 @@ import { ShoppingCart, Check } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import Button from '../ui/BrandButton';
 import { Product } from '@/types/product';
+import Image from 'next/image';
 
 interface ProductCardProps {
   product: Product;
@@ -31,7 +32,8 @@ export default function ProductCard({ product }: ProductCardProps) {
     >
       {/* Image */}
       <div className="relative aspect-[3/4] md:h-60 md:aspect-auto bg-gray-50 overflow-hidden">
-        <img
+        <Image
+          
           src={product.thumbnail_image || '/placeholder.png'}
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

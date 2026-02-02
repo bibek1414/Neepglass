@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Button from '@/components/ui/BrandButton';
 import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface FeatureSplitProps {
     title: string;
@@ -30,9 +31,11 @@ export default function FeatureSplit({
                 <div className={`order-2 ${reverse ? 'md:order-2' : 'md:order-1'}`}>
                     <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                         <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
-                        <img
+                        <Image
                             src={image}
                             alt={title}
+                            width={800}
+                            height={600}
                             className="w-full h-full object-cover aspect-4/3 hover:scale-105 transition-transform duration-700"
                         />
                     </div>

@@ -12,6 +12,7 @@ import { useCreateOrder } from '@/hooks/use-orders';
 import { useValidatePromoCode } from '@/hooks/use-promo-code-validate';
 import { useDeliveryChargeCalculator } from '@/hooks/use-delivery-charge-calculator';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -351,7 +352,7 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={`${item.product.id}-${item.selectedVariant?.id || 'none'}`} className="flex gap-4">
                     <div className="w-16 h-16 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-                      <img src={item.product.thumbnail_image || '/placeholder.png'} alt={item.product.name} className="w-full h-full object-cover" />
+                      <Image width={100} height={100} src={item.product.thumbnail_image || '/placeholder.png'} alt={item.product.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1">
                       <p className="font-bold text-primary text-sm line-clamp-1">{item.product.name}</p>

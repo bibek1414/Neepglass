@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, Calendar } from 'lucide-react';
 import { useBlogs } from '@/hooks/use-blogs';
 import { format } from 'date-fns';
+import Image from 'next/image';
 
 export default function BlogListingClient() {
     const { data: blogsData, isLoading } = useBlogs();
@@ -34,7 +35,9 @@ export default function BlogListingClient() {
                             blogPosts.map((post) => (
                                 <Link key={post.id} href={`/blog/${post.slug}`} className="group flex flex-col">
                                     <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-6">
-                                        <img
+                                        <Image
+                                            width={800}
+                                            height={600}
                                             src={post.thumbnail_image || '/placeholder.png'}
                                             alt={post.title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { useTestimonials } from '@/hooks/use-testimonials';
+import Image from 'next/image';
 
 export default function Testimonials() {
     const { data: testimonials, isLoading } = useTestimonials();
@@ -33,7 +34,9 @@ export default function Testimonials() {
                                 <p className="text-gray-200 mb-8 flex-1 italic leading-relaxed">&quot;{t.comment}&quot;</p>
 
                                 <div className="flex items-center gap-4">
-                                    <img
+                                    <Image
+                                    height={100}
+                                    width={100}
                                         src={t.image || 'https://via.placeholder.com/200'}
                                         alt={t.name}
                                         className="w-12 h-12 rounded-full object-cover border-2 border-secondary"

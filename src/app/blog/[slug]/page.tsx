@@ -2,10 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, User, Clock, Facebook, Twitter, Linkedin } from 'lucide-react';
-import Button from '@/components/ui/BrandButton';
+import { ChevronLeft, Calendar, User, Clock, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { useBlog } from '@/hooks/use-blogs';
 import { format } from 'date-fns';
+import Image from 'next/image';
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -34,7 +34,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       <div className="bg-primary/5 pb-20 pt-32">
         <div className="container-custom">
           <Link href="/blog" className="inline-flex items-center text-sm font-bold text-gray-500 hover:text-primary mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blog
+            <ChevronLeft className="w-4 h-4 mr-2" /> Back to Blog
           </Link>
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center items-center gap-4 text-sm font-bold uppercase tracking-wider text-secondary mb-6">
@@ -47,7 +47,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             </h1>
             <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
               <span className="flex items-center gap-2">
-                  <User className="w-4 h-4" /> {post.author ? `${post.author.first_name} ${post.author.last_name}` : 'Admin'}
+                <User className="w-4 h-4" /> {post.author ? `${post.author.first_name} ${post.author.last_name}` : 'Admin'}
               </span>
               <span className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" /> {format(new Date(post.created_at), 'MMM dd, yyyy')}
@@ -59,9 +59,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
       <div className="container-custom -mt-12">
         <div className="max-w-4xl mx-auto">
-          <img
-             src={post.thumbnail_image || '/placeholder.png'}
+          <Image
+            src={post.thumbnail_image || '/placeholder.png'}
             alt={post.title}
+            width={800}
+            height={600}
             className="w-full aspect-video object-cover rounded-3xl shadow-2xl mb-16"
           />
 
@@ -87,13 +89,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                 </div>
               </div>
 
-              <div className="bg-primary text-white p-8 rounded-2xl text-center">
-                <h4 className="text-xl font-bold mb-4">Find Your Look</h4>
-                <p className="text-gray-300 text-sm mb-6">Browse our latest collection tailored for style and comfort.</p>
-                <Link href="/products">
-                  <Button variant="secondary" className="w-full">Shop Now</Button>
-                </Link>
-              </div>
+
             </aside>
           </div>
         </div>

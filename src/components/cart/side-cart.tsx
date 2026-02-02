@@ -6,9 +6,7 @@ import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
 const SideCart: React.FC = () => {
     const {
         items: cartItems,

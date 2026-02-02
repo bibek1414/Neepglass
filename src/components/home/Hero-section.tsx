@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export default function HeroSection() {
     return (
@@ -37,7 +38,9 @@ export default function HeroSection() {
                 {/* Image */}
                 <div className="relative order-1 md:order-2">
                     <div className="absolute -top-16 -right-16 w-80 h-80 bg-secondary/5 rounded-full blur-3xl hidden md:block" />
-                    <img
+                    <Image
+                        width={800}
+                        height={600}
                         src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=800"
                         alt="NepGlass Premium Sunglasses"
                         className="w-full aspect-[4/3] md:aspect-[4/5] object-cover rounded-2xl md:rounded-3xl shadow-sm md:shadow-none"

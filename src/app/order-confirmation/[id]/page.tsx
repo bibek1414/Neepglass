@@ -2,12 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, } from 'next/navigation';
 import Button from '@/components/ui/BrandButton';
-import { CheckCircle2, Package, ChevronRight, ShoppingBag, Loader2, Home } from 'lucide-react';
+import { CheckCircle2, Package, ChevronRight, ShoppingBag, Home } from 'lucide-react';
 import { useOrder } from '@/hooks/use-orders';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export default function OrderConfirmationPage() {
     const params = useParams();
@@ -71,7 +71,9 @@ export default function OrderConfirmationPage() {
                                         <div key={item.id} className="flex gap-4">
                                             <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-gray-100">
                                                 {item.variant?.image || item.product?.thumbnail_image ? (
-                                                    <img
+                                                    <Image
+                                                        width={100}
+                                                        height={100}
                                                         src={item.variant?.image || item.product?.thumbnail_image || '/placeholder.png'}
                                                         alt={item.product?.name || 'Product'}
                                                         className="w-full h-full object-cover"

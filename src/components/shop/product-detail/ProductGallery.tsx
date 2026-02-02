@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-
+import Image from 'next/image';
 interface ProductGalleryProps {
     images: string[];
     thumbnail: string | null;
@@ -49,7 +49,7 @@ export default function ProductGallery({ images: propImages, thumbnail, productN
     if (images.length === 0 && !overrideImage) {
         return (
             <div className="bg-gray-50 rounded-3xl overflow-hidden aspect-square border border-gray-100 flex items-center justify-center">
-                <img src='/placeholder.png' alt={productName} className="w-full h-full object-cover opacity-50" />
+                <Image height={100} width={100} src='/placeholder.png' alt={productName} className="w-full h-full object-cover opacity-50" />
             </div>
         );
     }
@@ -63,7 +63,9 @@ export default function ProductGallery({ images: propImages, thumbnail, productN
     return (
         <div className="space-y-6">
             <div className="bg-gray-50 rounded-3xl overflow-hidden aspect-square border border-gray-100 relative group">
-                <img
+                <Image
+                    height={100}
+                    width={100}
                     src={currentSrc}
                     alt={productName}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -82,7 +84,9 @@ export default function ProductGallery({ images: propImages, thumbnail, productN
                                     : 'border-transparent opacity-60 hover:opacity-100'
                             )}
                         >
-                            <img
+                            <Image
+                                height={100}
+                                width={100}
                                 src={img || '/placeholder.png'}
                                 alt={`${productName} view ${i + 1}`}
                                 className="w-full h-full object-cover"
