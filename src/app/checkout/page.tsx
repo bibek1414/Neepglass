@@ -98,12 +98,24 @@ export default function CheckoutPage() {
         total_amount: finalTotal.toFixed(2),
         delivery_charge: deliveryCharge.toFixed(2),
         note: formData.note,
-        items: items.map(item => ({
-          product_id: item.product.id,
-          variant_id: item.selectedVariant?.id || null,
-          quantity: item.quantity,
-          price: (parseFloat(item.selectedVariant?.price || item.product.price)).toFixed(2)
-        })),
+        items: items.map(item => {
+          const baseItem = {
+            quantity: item.quantity,
+            price: (parseFloat(item.selectedVariant?.price || item.product.price)).toFixed(2)
+          };
+
+          if (item.selectedVariant?.id) {
+            return {
+              ...baseItem,
+              variant_id: item.selectedVariant.id
+            };
+          } else {
+            return {
+              ...baseItem,
+              product_id: item.product.id
+            };
+          }
+        }),
         payment_type: 'cod',
         promo_code: appliedPromo?.id,
         discount_amount: discountAmount.toFixed(2)
