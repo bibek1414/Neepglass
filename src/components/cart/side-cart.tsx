@@ -46,10 +46,10 @@ const SideCart: React.FC = () => {
                 <div className="flex h-full flex-col">
                     {/* Header */}
                     <div className="flex items-center justify-between border-b px-4 py-3 sm:px-5 sm:py-4">
-                        <h2 className="text-lg font-semibold text-foreground sm:text-xl flex items-center gap-2">
+                        <div className="text-lg font-semibold text-foreground sm:text-xl flex items-center gap-2">
                             <ShoppingBag className="h-5 w-5" />
                             Cart ({itemCount})
-                        </h2>
+                        </div>
                         <Button
                             variant="ghost"
                             size="icon"
