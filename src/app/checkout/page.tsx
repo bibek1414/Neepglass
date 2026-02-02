@@ -32,7 +32,7 @@ export default function CheckoutPage() {
   });
 
   const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState<{id: number, code: string, discount: number} | null>(null);
+  const [appliedPromo, setAppliedPromo] = useState<{ id: number, code: string, discount: number } | null>(null);
 
   const totalWeight = useMemo(() => {
     return items.reduce((acc, item) => {
@@ -104,7 +104,7 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           price: (parseFloat(item.selectedVariant?.price || item.product.price)).toFixed(2)
         })),
-        payment_type: 'COD',
+        payment_type: 'cod',
         promo_code: appliedPromo?.id,
         discount_amount: discountAmount.toFixed(2)
       };
@@ -186,27 +186,27 @@ export default function CheckoutPage() {
                       label="Email Address"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
                     />
                     <div className="grid grid-cols-2 gap-6">
                       <FloatingInput
                         label="First Name"
                         value={formData.firstName}
-                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                         required
                       />
                       <FloatingInput
                         label="Last Name"
                         value={formData.lastName}
-                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                         required
                       />
                     </div>
                     <FloatingInput
                       label="Address"
                       value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       required
                     />
                     <div className="grid grid-cols-2 gap-6">
@@ -214,7 +214,7 @@ export default function CheckoutPage() {
                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider pl-4">City / District</label>
                         <select
                           value={formData.city}
-                          onChange={(e) => setFormData({...formData, city: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                           className="w-full h-14 px-6 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-secondary transition-all text-sm appearance-none"
                           required
                         >
@@ -227,14 +227,14 @@ export default function CheckoutPage() {
                         label="Phone Number"
                         type="tel"
                         value={formData.phone}
-                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         required
                       />
                     </div>
                     <FloatingInput
                       label="Order Note (Optional)"
                       value={formData.note}
-                      onChange={(e) => setFormData({...formData, note: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                     />
                   </div>
                 </div>
@@ -245,13 +245,13 @@ export default function CheckoutPage() {
                   <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 flex gap-6 items-start">
                     <Truck className="w-6 h-6 text-secondary shrink-0" />
                     <div>
-                       <p className="font-bold text-primary mb-1">Shipping to:</p>
-                       <p className="text-sm text-gray-600">
-                         {formData.firstName} {formData.lastName}<br />
-                         {formData.address}, {formData.city}<br />
-                         {formData.phone}
-                       </p>
-                       <button type="button" onClick={() => setStep(2)} className="text-secondary text-xs font-bold mt-4 hover:underline">Edit Shipping</button>
+                      <p className="font-bold text-primary mb-1">Shipping to:</p>
+                      <p className="text-sm text-gray-600">
+                        {formData.firstName} {formData.lastName}<br />
+                        {formData.address}, {formData.city}<br />
+                        {formData.phone}
+                      </p>
+                      <button type="button" onClick={() => setStep(2)} className="text-secondary text-xs font-bold mt-4 hover:underline">Edit Shipping</button>
                     </div>
                   </div>
 

@@ -20,7 +20,7 @@ function HomeContent() {
   const { data: latestData, isLoading: latestLoading } = useProducts({ page_size: 4 }); // Assuming default is latest
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="">
       {/* 1. Hero Section */}
       <HeroSection />
 
