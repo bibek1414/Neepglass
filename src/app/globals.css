@@ -116,9 +116,7 @@
     @apply mb-4 leading-relaxed text-muted-foreground;
   }
 
-  section {
-    @apply py-12 md:py-16;
-  }
+ 
 
   .container-custom {
     @apply max-w-6xl mx-auto px-4 md:px-6;

@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import {Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 
 export default function HeroSection() {
     return (
-        <section className="relative bg-white min-h-[80vh] flex items-center">
+        <section className="relative bg-white min-h-[80vh] flex items-center py-12 md:py-16">
             <div className="container-custom grid md:grid-cols-2 gap-10 items-center">
 
                 {/* Text */}
