@@ -115,7 +115,21 @@ function ProductDetailContent({ params }: { params: { slug: string } }) {
               <span className="text-sm text-gray-500 font-medium">(2 Customer Reviews)</span>
             </div>
 
-            <p className="text-4xl font-bold text-primary mb-8">Rs. {product.price}</p>
+            <p className="text-4xl font-bold text-primary mb-4">Rs. {product.price}</p>
+
+            <div className="mb-8">
+              {product.stock > 0 ? (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <div className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                  In Stock
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
+                  Out of Stock
+                </span>
+              )}
+            </div>
 
             <div className="text-gray-600 mb-10 leading-relaxed text-lg prose prose-sm" dangerouslySetInnerHTML={{ __html: product.description || '' }} />
 

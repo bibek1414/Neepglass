@@ -5,6 +5,8 @@ import Button from '@/components/ui/BrandButton';
 import { Send } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { Input } from '@/components/ui/BrandInput';
+import { useSubmitContactForm } from '@/hooks/use-contact';
+import { toast } from 'sonner';
 
 const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 30 },
@@ -17,17 +19,32 @@ const fadeInUp: Variants = {
 
 export default function ContactForm() {
     const [isPending, setIsPending] = useState(false);
+    const submitContactMutation = useSubmitContactForm();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsPending(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            setIsPending(false);
-            alert('Message sent successfully! We will get back to you shortly.');
-            e.currentTarget.reset();
-        }, 1500);
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+            email: formData.get('email') as string,
+            phone_number: formData.get('phone') as string,
+            message: formData.get('message') as string,
+        };
+
+        submitContactMutation.mutate(data, {
+            onSuccess: () => {
+                toast.success('Message sent successfully! We will get back to you shortly.');
+                setIsPending(false);
+                (e.target as HTMLFormElement).reset();
+            },
+            onError: (error) => {
+                const message = error instanceof Error ? error.message : 'Failed to send message.';
+                toast.error(message);
+                setIsPending(false);
+            }
+        });
     };
 
     return (

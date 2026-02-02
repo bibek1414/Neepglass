@@ -3,11 +3,17 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, ChevronDown } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import { useCategories } from '@/hooks/use-category';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,16 +71,24 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Desktop Categories Dropdown/Links */}
-            {categories.slice(0, 3).map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/categories/${cat.slug}`}
-                className="text-sm font-bold text-primary hover:text-secondary transition-colors"
-              >
-                {cat.name}
-              </Link>
-            ))}
+            {/* Desktop Categories Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-bold text-primary hover:text-secondary transition-colors outline-none">
+                Categories <ChevronDown className="w-4 h-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {categories.map((cat) => (
+                  <DropdownMenuItem key={cat.id} asChild>
+                    <Link
+                      href={`/categories/${cat.slug}`}
+                      className="w-full cursor-pointer font-medium"
+                    >
+                      {cat.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <button
