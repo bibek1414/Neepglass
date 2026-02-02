@@ -23,7 +23,7 @@ type CartableProduct =
   };
 
 interface CartContextType {
-  cartItems: CartItem[];
+  items: CartItem[];
   addToCart: (
     product: CartableProduct,
     quantity: number,
@@ -41,7 +41,10 @@ interface CartContextType {
   ) => void;
   clearCart: () => void;
   itemCount: number;
+  totalItems: number;
   totalPrice: number;
+  isDrawerOpen: boolean;
+  setIsDrawerOpen: (isOpen: boolean) => void;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(
@@ -53,8 +56,9 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     // Load cart from localStorage on initial render
@@ -62,11 +66,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       try {
         const storedCart = localStorage.getItem("nepdora_cart");
         if (storedCart) {
-          setCartItems(JSON.parse(storedCart));
+          setItems(JSON.parse(storedCart));
         }
       } catch (error) {
         console.error("Failed to load cart from localStorage", error);
-        setCartItems([]);
+        setItems([]);
       } finally {
         setIsInitialized(true);
       }
@@ -80,11 +84,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     if (!isInitialized) return;
 
     try {
-      localStorage.setItem("nepdora_cart", JSON.stringify(cartItems));
+      localStorage.setItem("nepdora_cart", JSON.stringify(items));
     } catch (error) {
       console.error("Failed to save cart to localStorage", error);
     }
-  }, [cartItems, isInitialized]);
+  }, [items, isInitialized]);
 
   const addToCart = useCallback((
     product: CartableProduct,
@@ -98,7 +102,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     // Normalize the product to ensure it matches our Product type
     const normalizedProduct: Product = normalizeProductForCart(product);
 
-    setCartItems(prevItems => {
+    setItems(prevItems => {
       // Find existing item with same product AND variant (or both null)
       const existingItem = prevItems.find(item => {
         const productMatch = item.product.id === normalizedProduct.id;
@@ -133,7 +137,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, []);
 
   const removeFromCart = useCallback((productId: number, variantId?: number | null) => {
-    setCartItems(prevItems =>
+    setItems(prevItems =>
       prevItems.filter(item => {
         const productMatch = item.product.id === productId;
         const variantMatch =
@@ -152,7 +156,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     if (quantity <= 0) {
       removeFromCart(productId, variantId);
     } else {
-      setCartItems(prevItems =>
+      setItems(prevItems =>
         prevItems.map(item => {
           const productMatch = item.product.id === productId;
           const variantMatch =
@@ -164,12 +168,13 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [removeFromCart]);
 
   const clearCart = useCallback(() => {
-    setCartItems([]);
+    setItems([]);
   }, []);
 
-  const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const itemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const totalItems = itemCount;
 
-  const totalPrice = cartItems.reduce((total, item) => {
+  const totalPrice = items.reduce((total, item) => {
     // Use variant price if available, otherwise use product price
     const price = item.selectedVariant
       ? parseFloat(item.selectedVariant.price)
@@ -178,14 +183,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, 0);
 
   const value = useMemo(() => ({
-    cartItems,
+    items,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
     itemCount,
+    totalItems,
     totalPrice,
-  }), [cartItems, addToCart, removeFromCart, updateQuantity, clearCart, itemCount, totalPrice]);
+    isDrawerOpen,
+    setIsDrawerOpen,
+  }), [items, addToCart, removeFromCart, updateQuantity, clearCart, itemCount, totalItems, totalPrice, isDrawerOpen, setIsDrawerOpen]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
