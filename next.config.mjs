@@ -29,6 +29,11 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'images.pexels.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
                 hostname: 'avatars.githubusercontent.com',
                 pathname: '/**',
             },
