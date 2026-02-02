@@ -2,25 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Theme variables for Shadcn + custom primary/secondary colors */
-:root {
-  --primary: #284267;
-  --secondary: #5cbed7;
-  --primary-foreground: #ffffff;
-  --secondary-foreground: #ffffff;
-  --background: #ffffff;
-  --foreground: #284267;
-  --radius: 0.625rem;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #284267;
-  --section-spacing: 5rem;
+@layer base {
+  :root {
+    /* Radius */
+    --radius: 0.625rem;
+
+    /* Backgrounds */
+    --background: 0 0% 100%;
+    --foreground: 215 45% 28%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 45% 28%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 45% 28%;
+
+    /* Brand colors (converted from #284267 & #5cbed7) */
+    --primary: 215 45% 28%;              /* #284267 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 195 61% 60%;            /* #5cbed7 */
+    --secondary-foreground: 0 0% 100%;
+
+    /* UI colors */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 210 20% 96%;
+    --accent-foreground: 215 45% 28%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 16% 90%;
+    --input: 210 16% 90%;
+    --ring: 215 45% 28%;
+
+    /* Sidebar */
+    --sidebar: 0 0% 98%;
+    --sidebar-foreground: 215 45% 28%;
+    --sidebar-primary: 215 45% 28%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 96%;
+    --sidebar-accent-foreground: 215 45% 28%;
+    --sidebar-border: 210 16% 90%;
+    --sidebar-ring: 215 45% 28%;
+  }
+
+  /* 🌙 Dark mode */
+  .dark {
+    --background: 215 30% 12%;
+    --foreground: 0 0% 98%;
+
+    --card: 215 28% 16%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 215 28% 16%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 215 45% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 195 61% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 215 20% 22%;
+    --muted-foreground: 210 15% 70%;
+
+    --accent: 215 20% 22%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 72% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 20% 25%;
+    --input: 215 20% 25%;
+    --ring: 195 61% 50%;
+
+    --sidebar: 215 30% 14%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 195 61% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 20% 22%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 215 20% 25%;
+    --sidebar-ring: 195 61% 50%;
+  }
 }
 
 /* Base styles */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
 
   body {
@@ -29,26 +102,7 @@
     line-height: 1.6;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply text-primary font-bold tracking-tight;
-    line-height: 1.2;
-  }
-
-  h1 { @apply text-4xl md:text-5xl lg:text-6xl mb-6; }
-  h2 { @apply text-3xl md:text-4xl mt-12 mb-6; }
-  h3 { @apply text-2xl md:text-3xl mt-8 mb-4; }
-  h4 { @apply text-xl md:text-2xl mt-6 mb-3; }
-
-  p {
-    @apply mb-4 leading-relaxed text-gray-600;
-  }
-
-  section {
-    padding-top: var(--section-spacing);
-    padding-bottom: var(--section-spacing);
-  }
-
-  .container-custom {
+   .container-custom {
     @apply max-w-6xl mx-auto px-4 md:px-6;
   }
 }
@@ -56,6 +110,10 @@
 /* Utilities */
 @layer utilities {
   .glass-blur {
-    @apply backdrop-blur-md bg-white/70;
+    @apply backdrop-blur-md bg-white/70 dark:bg-black/40;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
