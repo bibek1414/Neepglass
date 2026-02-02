@@ -27,10 +27,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:-translate-y-1 "
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:-translate-y-1"
     >
       {/* Image */}
-      <div className="relative h-60 bg-gray-50 overflow-hidden">
+      <div className="relative aspect-[3/4] md:h-60 md:aspect-auto bg-gray-50 overflow-hidden">
         <img
           src={product.thumbnail_image || '/placeholder.png'}
           alt={product.name}
@@ -39,24 +39,20 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Content */}
-
-
-      <div className='px-4 flex flex-col flex-1'>
-        <div className="text-bold font-semibold text-primary leading-snug  mt-5">
-          {product.name}
-          <p className="text-sm text-primary font-light">
+      <div className='px-3 md:px-4 flex flex-col flex-1 py-3 md:py-0'>
+        <div className="text-bold font-semibold text-primary leading-snug mt-2 md:mt-5 text-sm md:text-base">
+          <span className="line-clamp-2">{product.name}</span>
+          <p className="text-xs md:text-sm text-primary font-light mt-1">
             Rs. {product.price}
           </p>
         </div>
 
-
-
         {/* CTA */}
-        <div className="mt-auto mb-2">
+        <div className="mt-auto mb-1 md:mb-2 pt-3 md:pt-4">
           <Button
             variant="primary"
             size="sm"
-            className="w-full rounded-full transition-all active:scale-95"
+            className="w-full rounded-full transition-all active:scale-95 text-xs md:text-sm py-1.5 md:py-2 h-auto"
             onClick={handleAddToCart}
             disabled={isAdded}
           >
