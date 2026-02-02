@@ -4,7 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/contexts/CartContext";
-import CartDrawer from "@/components/CartDrawer";
+import SideCart from "@/components/cart/side-cart";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "sonner";
 import NextTopLoader from 'nextjs-toploader';
@@ -30,7 +30,7 @@ export default function RootLayout({
           <CartProvider>
             <NextTopLoader color="#6f57cfp" />
             <Navbar />
-            <CartDrawer />
+            <SideCart />
             <main className="min-h-screen">
               {children}
             </main>

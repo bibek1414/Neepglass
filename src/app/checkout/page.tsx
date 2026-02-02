@@ -110,10 +110,10 @@ export default function CheckoutPage() {
       };
 
       createOrderMutation.mutate({ orderData }, {
-        onSuccess: () => {
+        onSuccess: (data) => {
           toast.success("Order placed successfully!");
           clearCart();
-          router.push('/thank-you');
+          router.push(`/order-confirmation/${data.id}`);
         },
         onError: (error: unknown) => {
           const message = error instanceof Error ? error.message : "Failed to place order";
@@ -343,6 +343,15 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex-1">
                       <p className="font-bold text-primary text-sm line-clamp-1">{item.product.name}</p>
+                      {item.selectedVariant && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {Object.entries(item.selectedVariant.option_values).map(([key, value]) => (
+                            <span key={key} className="text-[10px] text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded capitalize border border-gray-100">
+                              {key}: {value}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                       <div className="flex justify-between items-center mt-2">
                         <span className="text-xs text-gray-500">Qty: {item.quantity}</span>
                         <span className="text-sm font-bold text-primary">Rs. {(parseFloat(item.selectedVariant?.price || item.product.price) * item.quantity).toFixed(2)}</span>
