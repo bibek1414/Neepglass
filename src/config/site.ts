@@ -1,8 +1,6 @@
-import tenant from "../../tenant.json";
-const TENANT_NAME = tenant.tenantName;
+import tenantData from "../../tenant.json";
+const TENANT_NAME = tenantData.tenantName;
 export const siteConfig = {
-  name: "Nepdora",
-  description: "Nepdora Preview System",
   get apiBaseUrl() {
     return (
       process.env.NEXT_PUBLIC_API_URL ||
@@ -21,15 +19,15 @@ export const siteConfig = {
     );
   },
   get endpoints() {
-    const builderBase = this.builderBaseUrl;
+    const apibuilder = this.builderBaseUrl;
     return {
       fetchImage: (path: string) =>
         `${this.mediaBaseUrl}/${path.startsWith("/") ? path.slice(1) : path}`,
-      listImages: () => `${builderBase}/api/builder/images-map/${TENANT_NAME}/`,
+      listImages: () => `${apibuilder}/api/builder/images-map/${TENANT_NAME}/`,
       updateImageMap: () =>
-        `${builderBase}/api/builder/update-image-map/${TENANT_NAME}/`,
+        `${apibuilder}/api/builder/update-image-map/${TENANT_NAME}/`,
       uploadImage: () =>
-        `${builderBase}/api/builder/upload-image/${TENANT_NAME}/`,
+        `${apibuilder}/api/builder/upload-image/${TENANT_NAME}/`,
     };
   },
 };
