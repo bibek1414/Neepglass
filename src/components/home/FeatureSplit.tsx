@@ -31,18 +31,16 @@ export default function FeatureSplit({
         <section className="py-20 bg-white">
             <div className="container-custom grid md:grid-cols-2 gap-16 items-center">
                 <div className={`order-2 ${reverse ? 'md:order-2' : 'md:order-1'}`}>
-                    <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                        <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
-                        <ImageWithFallback
-                            src={image}
-                            fallbackSrc={image}
-                            alt={title}
-                            width={800}
-                            height={600}
-                            className="w-full h-full object-cover aspect-4/3 hover:scale-105 transition-transform duration-700"
-                            id={imageId || `feature-split-${title.toLowerCase().replace(/\s/g, '-')}`}
-                        />
-                    </div>
+                    <div className="absolute inset-0  mix-blend-overlay"></div>
+                    <ImageWithFallback
+                        src={image}
+                        fallbackSrc={image}
+                        alt={title}
+                        width={900}
+                        height={600}
+                        className="w-full h-full object-cover rounded-2xl aspect-4/3 hover:scale-105 transition-transform duration-700"
+                        id={imageId || `feature-split-${title.toLowerCase().replace(/\s/g, '-')}`}
+                    />
                 </div>
                 <div className={`order-1 ${reverse ? 'md:order-1' : 'md:order-2'}`}>
                     <p className="text-secondary font-bold uppercase tracking-widest text-sm mb-4">{subtitle}</p>

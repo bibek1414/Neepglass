@@ -33,7 +33,8 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Image */}
       <div className="relative aspect-[3/4] md:h-60 md:aspect-auto bg-gray-50 overflow-hidden">
         <Image
-          
+          height={100}
+          width={100}
           src={product.thumbnail_image || '/placeholder.png'}
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
